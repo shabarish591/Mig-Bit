@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/auto-tiger
+    docker:
+      - image: nikengp/node6:v0.3
+     # Environment variable for all commands executed in the primary container
+        Environment:
+          LOCAL_GITHUB_PATH: ./
+          REGION: us-west-2
+          STACK_NAME: auto-tiger-airflow-cluster
+          STACK_TEMPLATE: cloudformation_templates/airflow_main.template
+          STACK_PARAMETERS: cloudformation_params/dev/airflow_main-params.json
+          awsaccount: edfpreprod
+    steps:
+      - checkout
+      - run:
+          name: Install python dependencies
+          command: |
+            pip install boto3
+      - deploy:
+          name: deploy changes to s3 
+          command: bash  .circleci/deploy.sh 
